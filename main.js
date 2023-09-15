@@ -16,15 +16,23 @@ function onMouseUp()
 function resetGame()
 {
     sc = 0;
-    acc = 0.01;
+    acc = 0.02;
     vel = -0.1;
-    mov = 10;
+    mov = 5;
     gameMode = 0;
     sen = new Array(senNum);
     for(i = 0; i < senNum; ++i)
     {
         sen[i] = height * 0.5;
     }
+
+    harix = width;
+    hariy = -100;
+    harif = 100;
+    haris = 50;
+    nextHari = 100;
+    hariActive = false;
+    hariClear = false;
 }
 
 function init()
@@ -61,9 +69,38 @@ function moveGame()
         sen[i] = sen[i - 1] + vel; 
     }
 
+    // hari
+    if(hariActive)
+    {
+        harix -= mov;
+
+        if(harix < 90 && hariClear == false)
+        {
+            if(sen[89] < hariy || sen[89] > (hariy + haris)) gameMode = 1;
+            else hariClear = true;
+        }
+
+        if(harix < -20)
+        {
+            hariActive = false;
+            haris -= 1;
+        }
+    }
+
+    if(hariActive == false && sc > nextHari)
+    {
+        harix = width;
+        hariy = 200 + Math.random() * 200;
+        nextHari += harif;
+        hariActive = true;
+        hariClear = false;
+    }
+    
     pos = sen[senNum - 1];
     if(pos < 0) gameMode = 1;
     if(pos > height) gameMode = 1;
+    
+    click = false;
 }
 
 function moveGameover()
@@ -94,6 +131,50 @@ function drawGame()
     ctx.lineWidth = 1;
     ctx.strokeStyle = "white";
     ctx.stroke();
+
+    if(hariActive)
+    {
+        ctx.beginPath()
+        ctx.rect(harix,hariy,3,haris);
+        ctx.lineWidth = 1;
+        ctx.strokeStyle = "white";
+        ctx.stroke();
+
+        ctx.beginPath()
+        ctx.moveTo(harix, hariy + haris)
+        ctx.lineTo(harix + 1, hariy + haris + 200);
+        ctx.lineWidth = 1;
+        ctx.fillStyle = "white";
+        ctx.stroke();
+
+        ctx.beginPath()
+        ctx.moveTo(harix + 1, hariy + haris)
+        ctx.lineTo(harix + 1, hariy + haris + 200);
+        ctx.lineWidth = 1;
+        ctx.fillStyle = "white";
+        ctx.stroke();
+
+        ctx.beginPath()
+        ctx.moveTo(harix + 2, hariy + haris)
+        ctx.lineTo(harix + 1, hariy + haris + 200);
+        ctx.lineWidth = 1;
+        ctx.fillStyle = "white";
+        ctx.stroke();
+
+        ctx.beginPath()
+        ctx.moveTo(harix + 3, hariy + haris)
+        ctx.lineTo(harix + 1, hariy + haris + 200);
+        ctx.lineWidth = 1;
+        ctx.fillStyle = "white";
+        ctx.stroke();
+
+        if(hariClear)
+        {
+            ctx.beginPath();
+            ctx.fillStyle = "white";
+            ctx.fillText("OK", harix - 16, hariy - 10);
+        }
+    }
 }
 
 function drawGameOver()
